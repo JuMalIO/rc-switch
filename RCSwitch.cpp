@@ -97,7 +97,7 @@ static const RCSwitch::Protocol PROGMEM proto[] = {
     {10, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 120}, false},// protocol 10 (Everflourish All Buttons)
     {11, 88, 100, {34, 34}, {5, 4}, {5, 13}, {2, 200}, false},// protocol 11 (Cixi Yidong Electronics , sold as AXXEL, Telco, EVOLOGY, CONECTO, mumbi, Manax etc.)
     {12, 26, 333, {0, 1}, {1, 2}, {2, 1}, {45, 0}, true},     // protocol 12 (CAME)
-    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},   // protocol 13 (Shi Qiong) - 32+1 bit protocol. The last bit is a closing "0"
+    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},   // protocol 13 (Shi Qiong) - 1+32 bit protocol. The first bit is a leading "1"
 };
 
 enum
@@ -638,7 +638,8 @@ void RCSwitch::send(unsigned long code, unsigned int length)
       }
     }
     else if (this->protocol.protocolId == 13) {
-      // Protocol 13 (Shi Qiong) requires an extra "0" bit transmission at the end
+      // Protocol 13 (Shi Qiong) requires an extra "1" bit transmission at the beginning
+      this->transmit(protocol.one); // Send the 1st "1" bit
       for (int i = length - 2; i >= 0; i--)
       {
         if (code & (1L << i))
@@ -646,7 +647,6 @@ void RCSwitch::send(unsigned long code, unsigned int length)
         else
           this->transmit(protocol.zero);
       }
-      this->transmit(protocol.zero); // Send the 33rd "0" bit
     }
     else
     {
@@ -1098,12 +1098,12 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
     }
 
   }
-  // For protocol 13 (Shi Qiong), the last 33rd bit is always zero and can be omitted,
+  // For protocol 13 (Shi Qiong), the last 1st bit is always "1" (start bit) and can be omitted,
   // so data can be stored in the 32 bits long variable
   else if (p == 13) {
     if (receivedBitsPos > 0)
     {
-      for (unsigned int l = 0; l < receivedBitsPos-1; l++)
+      for (unsigned int l = 1; l < receivedBitsPos; l++)
       {
         code <<= 1;
         if (RCSwitch::receivedBits[l] == '1')

@@ -854,7 +854,7 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
   // The first place of the received timings array holds the pause length (low period). It is compared to the protocol specified low period length.
     unsigned int pauseLowDuration;
   pauseLowDuration = (pro.invertedSignal) ? (pro.pulseLength * pro.pause.high) : (pro.pulseLength * pro.pause.low);
-  const unsigned int pauseTolerance = (pauseLowDuration * RCSwitch::nReceiveTolerance / 100) * 0.7; //70% of the general tolerance is enough here
+  const unsigned int pauseTolerance = (pauseLowDuration * (RCSwitch::nReceiveTolerance / 100.0)) * 0.7; //70% of the general tolerance is enough here
 #ifdef DEBUG
     Serial.print(F("Protocol pause/end LOW duration: "));
     Serial.println(pauseLowDuration);
@@ -879,12 +879,12 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
   
 
   // Calculate the different tolerance values (RCSwitch::nReceiveTolerance % of the low or high durations)
-  const unsigned int syncLowTolerance = calculatedPulseLength * pro.sync.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int syncHighTolerance = calculatedPulseLength * pro.sync.high * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int oneLowTolerance = calculatedPulseLength * pro.one.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int oneHighTolerance = calculatedPulseLength * pro.one.high * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int zeroLowTolerance = calculatedPulseLength * pro.zero.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int zeroHighTolerance = calculatedPulseLength * pro.zero.high * RCSwitch::nReceiveTolerance / 100;
+  const unsigned int syncLowTolerance = calculatedPulseLength * pro.sync.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int syncHighTolerance = calculatedPulseLength * pro.sync.high * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int oneLowTolerance = calculatedPulseLength * pro.one.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int oneHighTolerance = calculatedPulseLength * pro.one.high * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int zeroLowTolerance = calculatedPulseLength * pro.zero.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int zeroHighTolerance = calculatedPulseLength * pro.zero.high * (RCSwitch::nReceiveTolerance / 100.0);
   
 
   // store bits in the receivedBits char array (to support longer frames)

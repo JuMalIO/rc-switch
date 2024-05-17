@@ -96,8 +96,8 @@ static const RCSwitch::Protocol PROGMEM proto[] = {
     {9, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 169}, false},      // protocol 9 (Everflourish Single Button)
     {10, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 120}, false},     // protocol 10 (Everflourish All Buttons)
     {11, 88, 100, {34, 34}, {5, 4}, {5, 13}, {2, 200}, false},    // protocol 11 (Cixi Yidong Electronics , sold as AXXEL, Telco, EVOLOGY, CONECTO, mumbi, Manax etc.)
-    {12, 26, 333, {0, 1}, {1, 2}, {2, 1}, {45, 0}, true},         // protocol 12 (CAME)
-    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},       // protocol 13 (Shi Qiong) - 32+1 bit protocol. The last bit is a closing "0"
+    {12, 26, 333, {0, 1}, {1, 2}, {2, 1}, {45, 0}, true},         // protocol 12 (CAME)  
+    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},       // protocol 13 (Shi Qiong) - 1+32 bit protocol. The first bit is a leading "1"  
     {14, 26, 50, {7, 8}, {8, 15}, {15, 8}, {15, 340}, false },    // protocol 14 (Mertik Maxitrol G6R-H4T1)	
     {15, 42, 20, {0, 0}, {40, 20}, {20, 40}, {340, 20}, true },   // protocol 15 (Ferport TAC4KR)
     {16, 132, 50, {99, 13}, {5, 13}, {11, 6}, {11, 101}, false }, // protocol 16 (AC123)	
@@ -641,7 +641,8 @@ void RCSwitch::send(unsigned long code, unsigned int length)
       }
     }
     else if (this->protocol.protocolId == 13) {
-      // Protocol 13 (Shi Qiong) requires an extra "0" bit transmission at the end
+      // Protocol 13 (Shi Qiong) requires an extra "1" bit transmission at the beginning
+      this->transmit(protocol.one); // Send the 1st "1" bit
       for (int i = length - 2; i >= 0; i--)
       {
         if (code & (1L << i))
@@ -649,7 +650,6 @@ void RCSwitch::send(unsigned long code, unsigned int length)
         else
           this->transmit(protocol.zero);
       }
-      this->transmit(protocol.zero); // Send the 33rd "0" bit
     }
     else
     {
@@ -857,7 +857,7 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
   // The first place of the received timings array holds the pause length (low period). It is compared to the protocol specified low period length.
     unsigned int pauseLowDuration;
   pauseLowDuration = (pro.invertedSignal) ? (pro.pulseLength * pro.pause.high) : (pro.pulseLength * pro.pause.low);
-  const unsigned int pauseTolerance = (pauseLowDuration * RCSwitch::nReceiveTolerance / 100) * 0.7; //70% of the general tolerance is enough here
+  const unsigned int pauseTolerance = (pauseLowDuration * (RCSwitch::nReceiveTolerance / 100.0)) * 0.7; //70% of the general tolerance is enough here
 #ifdef DEBUG
     Serial.print(F("Protocol pause/end LOW duration: "));
     Serial.println(pauseLowDuration);
@@ -882,12 +882,12 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
   
 
   // Calculate the different tolerance values (RCSwitch::nReceiveTolerance % of the low or high durations)
-  const unsigned int syncLowTolerance = calculatedPulseLength * pro.sync.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int syncHighTolerance = calculatedPulseLength * pro.sync.high * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int oneLowTolerance = calculatedPulseLength * pro.one.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int oneHighTolerance = calculatedPulseLength * pro.one.high * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int zeroLowTolerance = calculatedPulseLength * pro.zero.low * RCSwitch::nReceiveTolerance / 100;
-  const unsigned int zeroHighTolerance = calculatedPulseLength * pro.zero.high * RCSwitch::nReceiveTolerance / 100;
+  const unsigned int syncLowTolerance = calculatedPulseLength * pro.sync.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int syncHighTolerance = calculatedPulseLength * pro.sync.high * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int oneLowTolerance = calculatedPulseLength * pro.one.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int oneHighTolerance = calculatedPulseLength * pro.one.high * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int zeroLowTolerance = calculatedPulseLength * pro.zero.low * (RCSwitch::nReceiveTolerance / 100.0);
+  const unsigned int zeroHighTolerance = calculatedPulseLength * pro.zero.high * (RCSwitch::nReceiveTolerance / 100.0);
   
 
   // store bits in the receivedBits char array (to support longer frames)
@@ -1101,12 +1101,12 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
     }
 
   }
-  // For protocol 13 (Shi Qiong), the last 33rd bit is always zero and can be omitted,
+  // For protocol 13 (Shi Qiong), the last 1st bit is always "1" (start bit) and can be omitted,
   // so data can be stored in the 32 bits long variable
   else if (p == 13) {
     if (receivedBitsPos > 0)
     {
-      for (unsigned int l = 0; l < receivedBitsPos-1; l++)
+      for (unsigned int l = 1; l < receivedBitsPos; l++)
       {
         code <<= 1;
         if (RCSwitch::receivedBits[l] == '1')

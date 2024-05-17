@@ -85,21 +85,22 @@ static const RCSwitch::Protocol proto[] = {
 #else
 static const RCSwitch::Protocol PROGMEM proto[] = {
 #endif
-    {1, 50, 290, {0, 0}, {1, 3}, {3, 1}, {1, 31}, false},   // protocol 1 (EV1527)
-    {2, 255, 650, {0, 0}, {1, 2}, {2, 1}, {1, 10}, false},   // protocol 2
-    {3, 255, 100, {0, 0}, {4, 11}, {9, 6}, {30, 71}, false}, // protocol 3
-    {4, 255, 380, {0, 0}, {1, 3}, {3, 1}, {1, 6}, false},    // protocol 4
-    {5, 255, 500, {0, 0}, {1, 2}, {2, 1}, {6, 14}, false},   // protocol 5
-    {6, 255, 450, {0, 0}, {1, 2}, {2, 1}, {23, 1}, true},    // protocol 6 (HT6P20B)
-    {7, 255, 150, {0, 0}, {1, 6}, {6, 1}, {2, 62}, false},   // protocol 7 (HS2303-PT, i. e. used in AUKEY Remote)
-    {8, 255, 250, {1, 10}, {1, 5}, {1, 1}, {1, 40}, false},  // protocol 8 (Nexa)
-    {9, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 169}, false}, // protocol 9 (Everflourish Single Button)
-    {10, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 120}, false},// protocol 10 (Everflourish All Buttons)
-    {11, 88, 100, {34, 34}, {5, 4}, {5, 13}, {2, 200}, false},// protocol 11 (Cixi Yidong Electronics , sold as AXXEL, Telco, EVOLOGY, CONECTO, mumbi, Manax etc.)
-    {12, 26, 333, {0, 1}, {1, 2}, {2, 1}, {45, 0}, true},     // protocol 12 (CAME)
-    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},   // protocol 13 (Shi Qiong) - 32+1 bit protocol. The last bit is a closing "0"
-    {14, 26, 50, {7, 8}, {8, 15}, {15, 8}, {15, 340}, false },// protocol 14 (Mertik Maxitrol G6R-H4T1)	
-    {15, 42, 20, {0, 0}, {40, 20}, {20, 40}, {340, 20}, true },// protocol 15 (Ferport TAC4KR)
+    {1, 50, 290, {0, 0}, {1, 3}, {3, 1}, {1, 31}, false},         // protocol 1 (EV1527)
+    {2, 255, 650, {0, 0}, {1, 2}, {2, 1}, {1, 10}, false},        // protocol 2
+    {3, 255, 100, {0, 0}, {4, 11}, {9, 6}, {30, 71}, false},      // protocol 3
+    {4, 255, 380, {0, 0}, {1, 3}, {3, 1}, {1, 6}, false},         // protocol 4
+    {5, 255, 500, {0, 0}, {1, 2}, {2, 1}, {6, 14}, false},        // protocol 5
+    {6, 255, 450, {0, 0}, {1, 2}, {2, 1}, {23, 1}, true},         // protocol 6 (HT6P20B)
+    {7, 255, 150, {0, 0}, {1, 6}, {6, 1}, {2, 62}, false},        // protocol 7 (HS2303-PT, i. e. used in AUKEY Remote)
+    {8, 255, 250, {1, 10}, {1, 5}, {1, 1}, {1, 40}, false},       // protocol 8 (Nexa)
+    {9, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 169}, false},      // protocol 9 (Everflourish Single Button)
+    {10, 255, 100, {0, 0}, {6, 6}, {6, 12}, {6, 120}, false},     // protocol 10 (Everflourish All Buttons)
+    {11, 88, 100, {34, 34}, {5, 4}, {5, 13}, {2, 200}, false},    // protocol 11 (Cixi Yidong Electronics , sold as AXXEL, Telco, EVOLOGY, CONECTO, mumbi, Manax etc.)
+    {12, 26, 333, {0, 1}, {1, 2}, {2, 1}, {45, 0}, true},         // protocol 12 (CAME)
+    {13, 68, 100, {0, 0}, {3, 8}, {8, 3}, {3, 100}, false},       // protocol 13 (Shi Qiong) - 32+1 bit protocol. The last bit is a closing "0"
+    {14, 26, 50, {7, 8}, {8, 15}, {15, 8}, {15, 340}, false },    // protocol 14 (Mertik Maxitrol G6R-H4T1)	
+    {15, 42, 20, {0, 0}, {40, 20}, {20, 40}, {340, 20}, true },   // protocol 15 (Ferport TAC4KR)
+    {16, 132, 50, {99, 13}, {5, 13}, {11, 6}, {11, 101}, false }, // protocol 16 (AC123)	
 };
 
 enum
